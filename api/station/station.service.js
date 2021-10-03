@@ -32,19 +32,40 @@ async function remove(reviewId) {
 }
 
 
-async function add(review) {
+async function add(station) {
     try {
         // peek only updatable fields!
-        const reviewToAdd = {
-            byUserId: ObjectId(review.byUserId),
-            aboutUserId: ObjectId(review.aboutUserId),
-            txt: review.txt
-        }
-        const collection = await dbService.getCollection('review')
-        await collection.insertOne(reviewToAdd)
-        return reviewToAdd;
+        //const stationToAdd = {
+        //    byUserId: ObjectId(station.byUserId),
+        //    aboutUserId: ObjectId(station.aboutUserId),
+        //    txt: station.txt
+        //}
+        const stationToAdd = station
+        const collection = await dbService.getCollection('station')
+        await collection.insertOne(stationToAdd)
+        console.log(stationToAdd, 'service');
+        return stationToAdd;
     } catch (err) {
-        logger.error('cannot insert review', err)
+        logger.error('cannot insert station', err)
+        throw err
+    }
+}
+
+async function getById(stationId) {
+    try {
+        const collection = await dbService.getCollection('station')
+        try {
+            var station = await collection.findOne({ '_id': ObjectId(stationId) })
+        }
+
+        catch {
+            var station = await collection.findOne({ 'genre': (stationId) })
+            console.log(station.data, 'station');
+        }
+        return station
+    }
+    catch (err) {
+        logger.error(`while finding station ${stationId}`, err)
         throw err
     }
 }
@@ -54,10 +75,14 @@ function _buildCriteria(filterBy) {
     return criteria
 }
 
+
+
+
 module.exports = {
     query,
     remove,
-    add
+    add,
+    getById
 }
 
 

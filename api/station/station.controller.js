@@ -27,25 +27,14 @@ async function deleteStation(req, res) {
 async function addStation(req, res) {
     try {
         var station = req.body
-        station.byUserId = req.session.user._id
+        console.log(station,'stationstationstation');
+        //station.byUserId = req.session.user._id
         station = await stationService.add(station)
-
-        // prepare the updated station for sending out
-        station.aboutUser = await userService.getById(station.aboutUserId)
-
-        // Give the user credit for adding a station
-        var user = await userService.getById(station.byUserId)
-        user.score += 10;
-        user = await userService.update(user)
-        station.byUser = user
-        const fullUser = await userService.getById(user._id)
-
-        console.log('CTRL SessionId:', req.sessionID);
-        socketService.broadcast({ type: 'station-added', data: station, userId: station.byUserId })
-        socketService.emitToUser({ type: 'station-about-you', data: station, userId: station.aboutUserId })
-        socketService.emitTo({ type: 'user-updated', data: fullUser, label: fullUser._id })
-
         res.send(station)
+        // Give the user credit for adding a station
+        //socketService.broadcast({ type: 'station-added', data: station, userId: station.byUserId })
+        //socketService.emitToUser({ type: 'station-about-you', data: station, userId: station.aboutUserId })
+        //socketService.emitTo({ type: 'user-updated', data: fullUser, label: fullUser._id })
 
     } catch (err) {
         console.log(err)
@@ -54,8 +43,21 @@ async function addStation(req, res) {
     }
 }
 
+
+async function getStation(req, res) {
+    try {
+        const station = await stationService.getById(req.params.stationId)
+        res.send(station)
+    } catch (err) {
+        logger.error('Failed to get station', err)
+        res.status(500).send({ err: 'Failed to get station' })
+    }
+}
+
 module.exports = {
     getStations,
     deleteStation,
-    addStation
+    addStation,
+    getStation
+
 }
