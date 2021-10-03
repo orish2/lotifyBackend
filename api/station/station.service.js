@@ -2,15 +2,13 @@ const dbService = require('../../services/db.service')
 const ObjectId = require('mongodb').ObjectId
 const asyncLocalStorage = require('../../services/als.service')
 
-async function query() {
-
-}
 
 async function query(filterBy = {}) {
     try {
         const criteria = _buildCriteria(filterBy)
         const collection = await dbService.getCollection('station')
-        return collection
+        const stations = await collection.find().toArray()
+        return stations
     } catch (err) {
         logger.error('cannot find reviews', err)
         throw err
