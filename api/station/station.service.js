@@ -1,19 +1,19 @@
 const dbService = require('../../services/db.service')
 const ObjectId = require('mongodb').ObjectId
 const asyncLocalStorage = require('../../services/als.service')
+const logger = require('../../services/logger.service')
 
 
 async function query(filterBy = {}) {
     try {
         const criteria = _buildCriteria(filterBy)
         const collection = await dbService.getCollection('station')
-        const stations = await collection.find().toArray()
+        const stations = await collection.find(criteria).toArray()
         return stations
     } catch (err) {
         logger.error('cannot find reviews', err)
         throw err
     }
-
 }
 
 async function remove(reviewId) {
@@ -34,16 +34,9 @@ async function remove(reviewId) {
 
 async function add(station) {
     try {
-        // peek only updatable fields!
-        //const stationToAdd = {
-        //    byUserId: ObjectId(station.byUserId),
-        //    aboutUserId: ObjectId(station.aboutUserId),
-        //    txt: station.txt
-        //}
         const stationToAdd = station
         const collection = await dbService.getCollection('station')
         await collection.insertOne(stationToAdd)
-        console.log(stationToAdd, 'service');
         return stationToAdd;
     } catch (err) {
         logger.error('cannot insert station', err)
@@ -70,8 +63,30 @@ async function getById(stationId) {
     }
 }
 
+async function update(station) {
+    try {
+        // peek only updatable fields!
+        const stationToSave = {
+            ...station,
+            _id: ObjectId(station._id), // needed for the returnd obj
+        }
+        const collection = await dbService.getCollection('station')
+        await collection.updateOne({ _id: stationToSave._id }, { $set: stationToSave })
+        return stationToSave;
+    } catch (err) {
+        logger.error(`cannot update station ${station._id}`, err)
+        throw err
+    }
+}
+
 function _buildCriteria(filterBy) {
-    const criteria = {}
+    let criteria = {}
+    if (filterBy.keySearch) {
+        const txtCriteria = { $regex: filterBy.keySearch, $options: 'i' }
+        criteria = { name: txtCriteria }
+        //criteria = { $or: [{ name: { txtCriteria } }, { $in: { tags: { txtCriteria } } }] }
+    }
+    console.log(criteria, ' from build criteria');
     return criteria
 }
 
@@ -82,7 +97,8 @@ module.exports = {
     query,
     remove,
     add,
-    getById
+    getById,
+    update
 }
 
 

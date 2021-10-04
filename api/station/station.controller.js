@@ -5,21 +5,23 @@ const stationService = require('./station.service')
 
 async function getStations(req, res) {
     try {
-        const stations = await stationService.query()
+        var queryParams = req.query;
+        const stations = await stationService.query(queryParams)
         res.send(stations)
+
     } catch (err) {
         logger.error('Cannot get stations', err)
         res.status(500).send({ err: 'Failed to get stations' })
     }
 }
 
-async function deleteStation(req, res) {
+async function getStation(req, res) {
     try {
-        await stationService.remove(req.params.id)
-        res.send({ msg: 'Deleted successfully' })
+        const station = await stationService.getById(req.params.stationId)
+        res.send(station)
     } catch (err) {
-        logger.error('Failed to delete station', err)
-        res.status(500).send({ err: 'Failed to delete station' })
+        logger.error('Failed to get station', err)
+        res.status(500).send({ err: 'Failed to get station' })
     }
 }
 
@@ -27,8 +29,6 @@ async function deleteStation(req, res) {
 async function addStation(req, res) {
     try {
         var station = req.body
-        console.log(station,'stationstationstation');
-        //station.byUserId = req.session.user._id
         station = await stationService.add(station)
         res.send(station)
         // Give the user credit for adding a station
@@ -44,9 +44,10 @@ async function addStation(req, res) {
 }
 
 
-async function getStation(req, res) {
+async function updateStation(req, res) {
     try {
-        const station = await stationService.getById(req.params.stationId)
+        var station = req.body;
+         station = await stationService.update(station)
         res.send(station)
     } catch (err) {
         logger.error('Failed to get station', err)
@@ -54,10 +55,26 @@ async function getStation(req, res) {
     }
 }
 
+
+async function deleteStation(req, res) {
+    try {
+        await stationService.remove(req.params.id)
+        res.send({ msg: 'Deleted successfully' })
+    } catch (err) {
+        logger.error('Failed to delete station', err)
+        res.status(500).send({ err: 'Failed to delete station' })
+    }
+}
+
+
+
+
+
+
 module.exports = {
     getStations,
     deleteStation,
     addStation,
-    getStation
-
+    getStation,
+    updateStation
 }
