@@ -11,26 +11,25 @@ async function query(filterBy = {}) {
         const stations = await collection.find(criteria).toArray()
         return stations
     } catch (err) {
-        logger.error('cannot find reviews', err)
+        logger.error('cannot find station', err)
         throw err
     }
 }
 
-// TODO...
-async function remove(stationId) {
-    try {
-        const store = asyncLocalStorage.getStore()
-        const { userId, isAdmin } = store
-        const collection = await dbService.getCollection('review')
-        // remove only if user is owner/admin
-        const criteria = { _id: ObjectId(reviewId) }
-        if (!isAdmin) criteria.byUserId = ObjectId(userId)
-        await collection.deleteOne(criteria)
-    } catch (err) {
-        logger.error(`cannot remove review ${reviewId}`, err)
-        throw err
-    }
-}
+//async function remove(stationId) {
+//    try {
+//        const store = asyncLocalStorage.getStore()
+//        const { userId, isAdmin } = store
+//        const collection = await dbService.getCollection('review')
+//        // remove only if user is owner/admin
+//        const criteria = { _id: ObjectId(reviewId) }
+//        if (!isAdmin) criteria.byUserId = ObjectId(userId)
+//        await collection.deleteOne(criteria)
+//    } catch (err) {
+//        logger.error(`cannot remove review ${reviewId}`, err)
+//        throw err
+//    }
+//}
 
 
 async function add(station) {
@@ -96,7 +95,7 @@ function _buildCriteria(filterBy) {
 
 module.exports = {
     query,
-    remove,
+    //remove,
     add,
     getById,
     update
