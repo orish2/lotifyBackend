@@ -16,7 +16,8 @@ async function query(filterBy = {}) {
 
 }
 
-async function remove(reviewId) {
+// TODO...
+async function remove(stationId) {
     try {
         const store = asyncLocalStorage.getStore()
         const { userId, isAdmin } = store
