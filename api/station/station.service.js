@@ -45,16 +45,22 @@ async function add(station) {
 }
 
 async function getById(stationId) {
+    let station
     try {
         const collection = await dbService.getCollection('station')
-        try {
-            var station = await collection.findOne({ '_id': ObjectId(stationId) })
-        }
-
-        catch {
-            var station = await collection.findOne({ 'genre': (stationId) })
-            console.log(station.data, 'station');
-        }
+        station = await collection.findOne({ '_id': ObjectId(stationId) })
+        return station
+    }
+    catch (err) {
+        logger.error(`while finding station ${stationId}`, err)
+        throw err
+    }
+}
+async function getByGenre(stationId) {
+    let station
+    try {
+        const collection = await dbService.getCollection('station')
+        station = await collection.findOne({ 'genre': (stationId) })
         return station
     }
     catch (err) {
@@ -65,7 +71,6 @@ async function getById(stationId) {
 
 async function update(station) {
     try {
-        // peek only updatable fields!
         const stationToSave = {
             ...station,
             _id: ObjectId(station._id), // needed for the returnd obj
@@ -86,7 +91,6 @@ function _buildCriteria(filterBy) {
         criteria = { name: txtCriteria }
         //criteria = { $or: [{ name: { txtCriteria } }, { $in: { tags: { txtCriteria } } }] }
     }
-    console.log(criteria, ' from build criteria');
     return criteria
 }
 
@@ -98,6 +102,7 @@ module.exports = {
     //remove,
     add,
     getById,
+    getByGenre,
     update
 }
 

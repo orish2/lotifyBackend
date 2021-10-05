@@ -15,9 +15,19 @@ async function getStations(req, res) {
     }
 }
 
-async function getStation(req, res) {
+async function getStationById(req, res) {
     try {
         const station = await stationService.getById(req.params.stationId)
+        res.send(station)
+    } catch (err) {
+        logger.error('Failed to get station', err)
+        res.status(500).send({ err: 'Failed to get station' })
+    }
+}
+
+async function getStationByGenre(req, res) {
+    try {
+        const station = await stationService.getByGenre(req.params.stationId)
         res.send(station)
     } catch (err) {
         logger.error('Failed to get station', err)
@@ -75,6 +85,7 @@ module.exports = {
     getStations,
     deleteStation,
     addStation,
-    getStation,
+    getStationById,
+    getStationByGenre,
     updateStation
 }
