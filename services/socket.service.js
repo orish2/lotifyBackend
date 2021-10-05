@@ -2,7 +2,7 @@ const asyncLocalStorage = require('./als.service');
 const logger = require('./logger.service');
 
 var gIo = null
-
+const allTrack = []
 function connectSockets(http, session) {
     gIo = require('socket.io')(http, {
         cors: {
@@ -14,21 +14,28 @@ function connectSockets(http, session) {
         socket.on('disconnect', socket => {
             console.log('Someone disconnected')
         })
-        socket.on('chat topic', topic => {
-            if (socket.myTopic === topic) return;
-            if (socket.myTopic) {
-                socket.leave(socket.myTopic)
-            }
-            socket.join(topic)
-            socket.myTopic = topic
+        //socket.on('play track', topic => {
+        //    if (socket.myTopic === topic) return;
+        //    if (socket.myTopic) {
+        //        socket.leave(socket.myTopic)
+        //    }
+        //    socket.join(topic)
+        //    socket.myTopic = topic
+        //})
+        //socket.on('chat topic', topic => {
+        //    if (socket.myTopic === topic) return;
+        //    if (socket.myTopic) {
+        //        socket.leave(socket.myTopic)
+        //    }
+        //    socket.join(topic)
+        //    socket.myTopic = topic
+        //})
+        socket.on('play track', ({track ,user}) => {
+            console.log('Emitting track', track, user);
+            //allTrack.push(track)
+            gIo.emit('user track', {track, user})
         })
-        socket.on('chat newMsg', msg => {
-            console.log('Emitting Chat msg', msg);
-            // emits to all sockets:
-            // gIo.emit('chat addMsg', msg)
-            // emits only to sockets in the same room
-            gIo.to(socket.myTopic).emit('chat addMsg', msg)
-        })
+
         socket.on('user-watch', userId => {
             socket.join('watching:' + userId)
         })

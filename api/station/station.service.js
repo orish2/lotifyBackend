@@ -34,6 +34,7 @@ async function query(filterBy = {}) {
 
 async function add(station) {
     try {
+        console.log("🚀 ~ file: station.service.js ~ line 36 ~ add ~ station", station)
         const stationToAdd = station
         const collection = await dbService.getCollection('station')
         await collection.insertOne(stationToAdd)
