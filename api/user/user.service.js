@@ -1,7 +1,6 @@
 
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
-// const reviewService = require('../review/review.service')
 const ObjectId = require('mongodb').ObjectId
 
 module.exports = {
@@ -37,21 +36,16 @@ async function getById(userId) {
         const collection = await dbService.getCollection('user')
         const user = await collection.findOne({ '_id': ObjectId(userId) })
         delete user.password
-
-        user.givenReviews = await reviewService.query({ byUserId: ObjectId(user._id) })
-        user.givenReviews = user.givenReviews.map(review => {
-            delete review.byUser
-            return review
-        })
-
         return user
     } catch (err) {
         logger.error(`while finding user ${userId}`, err)
         throw err
     }
 }
+
 async function getByUsername(username) {
     try {
+        console.log(username);
         const collection = await dbService.getCollection('user')
         const user = await collection.findOne({ username })
         return user
@@ -73,12 +67,9 @@ async function remove(userId) {
 
 async function update(user) {
     try {
-        // peek only updatable fields!
         const userToSave = {
+            ...user,
             _id: ObjectId(user._id), // needed for the returnd obj
-            username: user.username,
-            fullname: user.fullname,
-            score: user.score,
         }
         const collection = await dbService.getCollection('user')
         await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -91,12 +82,15 @@ async function update(user) {
 
 async function add(user) {
     try {
-        // peek only updatable fields!
         const userToAdd = {
             username: user.username,
-            password: user.password,
             fullname: user.fullname,
-            score: 100
+            password: user.password,
+            likedTracks : [],
+            likedStations : [],
+            recentlyPlayedStations : [],
+            recentlyPlayedSongs : [],
+            userPref : user.userPref
         }
         const collection = await dbService.getCollection('user')
         await collection.insertOne(userToAdd)

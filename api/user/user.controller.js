@@ -1,4 +1,4 @@
-// const userService = require('./user.service')
+const userService = require('./user.service')
 const socketService = require('../../services/socket.service')
 const logger = require('../../services/logger.service')
 
