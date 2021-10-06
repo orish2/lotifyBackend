@@ -2,6 +2,7 @@ const dbService = require('../../services/db.service')
 const ObjectId = require('mongodb').ObjectId
 const asyncLocalStorage = require('../../services/als.service')
 const logger = require('../../services/logger.service')
+const userService = require('../user/user.service')
 
 
 async function query(filterBy = {}) {
@@ -32,9 +33,16 @@ async function query(filterBy = {}) {
 //}
 
 
-async function add(station) {
+async function add(station,user) {
     try {
-        const stationToAdd = station
+        stationToAdd = {
+            ...station
+            ,createdBy:{
+                id:user._id,
+                fullname:user.fullname,
+            }
+        }
+
         const collection = await dbService.getCollection('station')
         await collection.insertOne(stationToAdd)
         return stationToAdd;
@@ -69,6 +77,24 @@ async function getByGenre(stationId) {
     }
 }
 
+async function getByUser(userId) {
+    try {
+        let user = await userService.getById(userId)
+        const collection = await dbService.getCollection('station')
+        let stations = user.likedStations.map(async stationId => {
+            return await getById(stationId)
+        })
+        stations = await Promise.all(stations)
+
+        createdStation = await collection.find({ 'createdBy.id': (userId) }).toArray()
+        return stations.concat(createdStation)
+    }
+    catch (err) {
+        logger.error(`while finding stations by user ${userId}`, err)
+        throw err
+    }
+}
+
 async function update(station) {
     try {
         const stationToSave = {
@@ -99,11 +125,11 @@ function _buildCriteria(filterBy) {
 
 module.exports = {
     query,
-    //remove,
     add,
     getById,
     getByGenre,
-    update
+    update,
+    getByUser
 }
 
 
