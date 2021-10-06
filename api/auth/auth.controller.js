@@ -6,6 +6,7 @@ async function login(req, res) {
     try {
         const user = await authService.login(username, password)
         req.session.user = user
+        // console.log(req.session);
         res.json(user)
     } catch (err) {
         logger.error('Failed to Login ' + err)

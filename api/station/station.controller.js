@@ -35,11 +35,24 @@ async function getStationByGenre(req, res) {
     }
 }
 
+async function getStationsByUser(req, res) {
+    try {
+        let stations = await stationService.getByUser(req.params.userId)
+        stations=stations.filter((station)=>station)
+        res.send(stations)
+    } catch (err) {
+        logger.error('Failed to get station', err)
+        res.status(500).send({ err: 'Failed to get station' })
+    }
+}
+
 
 async function addStation(req, res) {
     try {
+        console.log(req.session);
+        const user=req.session.user
         var station = req.body
-        station = await stationService.add(station)
+        station = await stationService.add(station,user)
         res.send(station)
         // Give the user credit for adding a station
         //socketService.broadcast({ type: 'station-added', data: station, userId: station.byUserId })
@@ -87,5 +100,6 @@ module.exports = {
     addStation,
     getStationById,
     getStationByGenre,
+    getStationsByUser,
     updateStation
 }
