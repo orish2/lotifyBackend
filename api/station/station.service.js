@@ -35,7 +35,7 @@ async function query(filterBy = {}) {
 
 async function add(station,user) {
     try {
-        stationToAdd = {
+      let  stationToAdd = {
             ...station
             ,createdBy:{
                 id:user._id,
