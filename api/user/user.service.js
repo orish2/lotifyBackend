@@ -113,9 +113,9 @@ function _buildCriteria(filterBy) {
             }
         ]
     }
-    if (filterBy.minBalance) {
-        criteria.balance = { $gte: filterBy.minBalance }
-    }
+    //if (filterBy.minBalance) {
+    //    criteria.balance = { $gte: filterBy.minBalance }
+    //}
     return criteria
 }
 
