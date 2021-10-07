@@ -30,19 +30,34 @@ function connectSockets(http, session) {
         //    socket.join(topic)
         //    socket.myTopic = topic
         //})
-        socket.on('play track', ({track ,user}) => {
-            console.log('Emitting track', track, user);
-            //allTrack.push(track)
-            gIo.emit('user track', {track, user})
-        })
-
-        socket.on('user-watch', userId => {
-            socket.join('watching:' + userId)
-        })
         socket.on('set-user-socket', userId => {
             logger.debug(`Setting (${socket.id}) socket.userId = ${userId}`)
+            socket.join(userId)
             socket.userId = userId
         })
+
+        socket.on('play track', ({ track, user }) => {
+            console.log('Emitting track', track, user);
+            //allTrack.push(track)
+            gIo.emit('user track', { track, user })
+        })
+
+        socket.on('add like', ({ userIdliked, currUser }) => {
+            //console.log("🚀 ~ file: socket.service.js ~ line 47 ~ socket.on ~ userIdliked", userIdliked)
+            //emitToUser({ type: 'send notification', data: userIdliked, userId: userIdliked })
+            //socket.to(userIdliked).emit('send notification', userIdliked);
+            //socket.emit('send notification', userIdliked);
+            //gIo.to(userIdliked).emit('send notification', userIdliked);
+            //gIo.to(`${userIdliked}`).emit('send notification', userIdliked);
+            //socket.broadcast.to(`${userIdliked}`).emit('send notification', userIdliked);
+            //gIo.of(`${userIdliked}`).emit('send notification', userIdliked);
+            //socket.broadcast.to(userIdliked).emit('send notification', userIdliked);
+            socket.broadcast.to(`${userIdliked}`).emit('send notification', currUser.username);
+
+
+            //allTrack.push(track)
+        })
+
         socket.on('unset-user-socket', () => {
             delete socket.userId
         })
@@ -58,7 +73,10 @@ function emitTo({ type, data, label }) {
 async function emitToUser({ type, data, userId }) {
     logger.debug('Emiting to user socket: ' + userId)
     const socket = await _getUserSocket(userId)
-    if (socket) socket.emit(type, data)
+    if (socket) {
+        socket.emit(type, data)
+        console.log(` socket.emit(${type}, ${data})`);
+    }
     else {
         console.log('User socket not found');
         _printSockets();
