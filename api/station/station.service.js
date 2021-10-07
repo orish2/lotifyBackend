@@ -77,6 +77,30 @@ async function getByGenre(stationId) {
     }
 }
 
+async function getGoodDay() {
+    try {
+        const collection = await dbService.getCollection('station')
+        stations = await collection.find({ 'goodDay': "day" }).toArray()
+        return stations
+    }
+    catch (err) {
+        logger.error(`while finding stations by `, err)
+        throw err
+    }
+}
+
+async function getHotStations() {
+    try {
+        const collection = await dbService.getCollection('station')
+        stations = await collection.find({ 'hot': "hot" }).toArray()
+        return stations
+    }
+    catch (err) {
+        logger.error(`while finding stations by `, err)
+        throw err
+    }
+}
+
 async function getByUser(userId) {
     try {
         let user = await userService.getById(userId)
@@ -129,7 +153,9 @@ module.exports = {
     getById,
     getByGenre,
     update,
-    getByUser
+    getByUser,
+    getGoodDay,
+    getHotStations
 }
 
 

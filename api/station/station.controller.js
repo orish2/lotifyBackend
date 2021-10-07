@@ -15,6 +15,28 @@ async function getStations(req, res) {
     }
 }
 
+async function getGoodDayStations(req, res) {
+    try {
+        const stations = await stationService.getGoodDay()
+        res.send(stations)
+
+    } catch (err) {
+        logger.error('Cannot get stations', err)
+        res.status(500).send({ err: 'Failed to get stations' })
+    }
+}
+
+async function getHotStations(req, res) {
+    try {
+        const stations = await stationService.getHotStations()
+        res.send(stations)
+
+    } catch (err) {
+        logger.error('Cannot get stations', err)
+        res.status(500).send({ err: 'Failed to get stations' })
+    }
+}
+
 async function getStationById(req, res) {
     try {
         const station = await stationService.getById(req.params.stationId)
@@ -101,5 +123,7 @@ module.exports = {
     getStationById,
     getStationByGenre,
     getStationsByUser,
-    updateStation
+    updateStation,
+    getGoodDayStations,
+    getHotStations
 }
