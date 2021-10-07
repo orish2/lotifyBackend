@@ -79,21 +79,34 @@ async function update(user) {
     }
 }
 
+// username: null,
+// password: null,
+// fullname: null,
+// facebookUserId: null,
+// facebookImg: null
 async function add(user) {
     try {
-        const userToAdd = {
+        let userToAdd = {
             username: user.username,
             fullname: user.fullname,
             password: user.password,
-            likedTracks : [],
-            likedStations : [],
-            recentlyPlayedStations : [],
-            recentlyPlayedSongs : [],
-            userPref : user.userPref
+            likedTracks: [],
+            likedStations: [],
+            recentlyPlayedStations: [],
+            recentlyPlayedSongs: [],
+            userPref: user.userPref
+        }
+        if (user.facebookUserId) {
+            userToAdd.facebookUserId = user.facebookUserId
+            userToAdd.img = user.img
         }
         const collection = await dbService.getCollection('user')
-        await collection.insertOne(userToAdd)
+        let userExists = await getByUsername(userToAdd.username)
+        if (!userExists) {
+            await collection.insertOne(userToAdd)
+        }
         return userToAdd
+
     } catch (err) {
         logger.error('cannot insert user', err)
         throw err
