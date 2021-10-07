@@ -89,6 +89,7 @@ async function add(user) {
             likedStations : [],
             recentlyPlayedStations : [],
             recentlyPlayedSongs : [],
+            following : [],
             userPref : user.userPref
         }
         const collection = await dbService.getCollection('user')
