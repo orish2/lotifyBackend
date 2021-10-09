@@ -111,7 +111,10 @@ async function getByUser(userId) {
         stations = await Promise.all(stations)
 
         createdStation = await collection.find({ 'createdBy.id': (userId) }).toArray()
-        return stations.concat(createdStation)
+        likedStation = await collection.findOne({ 'genre':"likedTracks" })
+        stations= stations.concat(createdStation)
+        stations.push(likedStation)
+        return stations
     }
     catch (err) {
         logger.error(`while finding stations by user ${userId}`, err)
