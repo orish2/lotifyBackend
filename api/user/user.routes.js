@@ -10,6 +10,7 @@ router.get('/', getUsers)
 router.get('/:id', getUser)
 router.put('/:id',  updateUser)
 // router.get('/:id', getByName)
+ router.put('/:id',  updateUser)
 // router.put('/:id', requireAuth,  updateUser)
 
 // // router.put('/:id',  requireAuth, updateUser)
