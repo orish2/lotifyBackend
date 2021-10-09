@@ -42,7 +42,7 @@ function connectSockets(http, session) {
             gIo.emit('user track', { track, user })
         })
 
-        socket.on('add like', ({ userIdliked, currUser }) => {
+        socket.on('add like', ({ userIdliked, currUser, stationName }) => {
             //console.log("🚀 ~ file: socket.service.js ~ line 47 ~ socket.on ~ userIdliked", userIdliked)
             //emitToUser({ type: 'send notification', data: userIdliked, userId: userIdliked })
             //socket.to(userIdliked).emit('send notification', userIdliked);
@@ -54,8 +54,9 @@ function connectSockets(http, session) {
             //socket.broadcast.to(userIdliked).emit('send notification', userIdliked);
             if (userIdliked === '615b1395706f019209666d5d') return
             if (userIdliked === currUser._id) return
-           
-            socket.broadcast.to(`${userIdliked}`).emit('send notification', currUser.username);
+            let obj = { username: currUser.username, stationName: stationName };
+            console.log(obj, 'obj');
+            socket.broadcast.to(`${userIdliked}`).emit('send notification', obj);
             //allTrack.push(track)
         })
         socket.on('following', ({ userIdToFollow, currUser }) => {
