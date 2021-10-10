@@ -52,9 +52,16 @@ function connectSockets(http, session) {
             //socket.broadcast.to(`${userIdliked}`).emit('send notification', userIdliked);
             //gIo.of(`${userIdliked}`).emit('send notification', userIdliked);
             //socket.broadcast.to(userIdliked).emit('send notification', userIdliked);
+            if (userIdliked === '615b1395706f019209666d5d') return
+            if (userIdliked === currUser._id) return
+           
             socket.broadcast.to(`${userIdliked}`).emit('send notification', currUser.username);
-
-
+            //allTrack.push(track)
+        })
+        socket.on('following', ({ userIdToFollow, currUser }) => {
+            if (userIdToFollow === '615b1395706f019209666d5d') return
+            if (userIdToFollow === currUser._id) return
+            socket.broadcast.to(`${userIdToFollow}`).emit('send follow notification', currUser.username);
             //allTrack.push(track)
         })
 
