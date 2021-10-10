@@ -28,6 +28,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 console.log('here123');
+console.log('ori');
 const authRoutes = require('./api/auth/auth.routes')
 const userRoutes = require('./api/user/user.routes')
 const stationRoutes = require('./api/station/station.routes')
