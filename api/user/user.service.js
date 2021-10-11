@@ -79,6 +79,44 @@ async function update(user) {
     }
 }
 
+// Ori - Capitalize userPref Artists Name:
+
+// capitalizeFullName('ori sharon')
+function capitalizeFullName(fullname) {
+    return fullname.split(' ').map(word => word[0].toUpperCase() + word.substr(1)).join(' ')
+}
+
+async function capitalizeSigleUserPref(userPref) {
+    return userPref.map(pref => {
+        newPref = { ...pref }
+        newPref.artist = capitalizeFullName(newPref.artist)
+        return newPref
+    })
+}
+
+
+// TODO:
+// capitalizeUsersPref()
+async function capitalizeUsersPref() {
+    try {
+        const collection = await dbService.getCollection('user')
+        const users = collection.find().toArray()
+        const updatedUsers = users.map(user => {
+            newUser = { ...user }
+            newUser.userPref = capitalizeSigleUserPref(newUser.userPref)
+            return newUser
+        })
+        updatedUsers.forEach(user => update(user))
+
+    }
+    catch (err) {
+        console.log('err capitalizing', err);
+    }
+}
+
+
+
+
 // username: null,
 // password: null,
 // fullname: null,
@@ -95,7 +133,7 @@ async function add(user) {
             recentlyPlayedStations: [],
             recentlyPlayedSongs: [],
             userPref: user.userPref,
-            following : []
+            following: []
         }
         if (user.facebookUserId) {
             userToAdd.facebookUserId = user.facebookUserId
